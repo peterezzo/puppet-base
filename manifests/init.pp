@@ -47,13 +47,13 @@ class base (
   if resolvconf {
     file { '/etc/resolv.conf':
       ensure => present,
-      source => "puppet:///modules/${module_name}/resolv.conf",
+      source => "puppet:///modules/${module_name}/resolv.conf"
     }
   }
 
   # set our proxy badly
   if profile_proxy_vars {
-    file { '/etc/profile.d/proxy.sh'
+    file { '/etc/profile.d/proxy.sh':
       ensure => present,
       source => "puppet:///modules/${module_name}/profile-proxy_vars.sh"
     }
