@@ -8,6 +8,7 @@
 # sudo_env_keep - keep proxy variables when executing sudo (off by default)
 # cron_apt_autoremove - run apt-get autoremove weekly (on in Ubuntu.yaml)
 # cron_puppet_apply - run git pull & puppet apply hourly (off by default)
+# ubuntu_clean_motd - remove landscape bits from Ubuntu's motd (on in Ubuntu.yaml)
 class base (
   $resolvconf          = false,
   $create_admin_user   = false,
@@ -77,12 +78,30 @@ class base (
     }
   }
 
-  # drop a cronjob in to refresh our config hourly
+  # for agentless setups use a cronjob each hour to sync and apply
   if cron_puppet_apply {
     file { '/etc/cron.hourly/puppet_apply':
       ensure => present,
       mode   => '0766',
       source => "puppet:///modules/${module_name}/cron-puppet_apply.sh"
+    }
+  }
+
+  # turn off the landscape bits in motd, specific to ubuntu
+  if ($::operatingsystem == 'Ubuntu') and ubuntu_clean_motd {
+    file { '/etc/update-motd.d/10-help-text':
+      ensure => absent,
+    }
+
+    package { 'landscape-common':
+      ensure => present,
+      before => File['/etc/landscape/client.conf'],
+    }
+    file { '/etc/landscape/client.conf':
+      ensure => present,
+      owner  => 'landscape',
+      group  => 'landscape',
+      source => "puppet:///modules/${module_name}/ubuntu-client.conf"
     }
   }
 }

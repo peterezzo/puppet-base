@@ -1,18 +1,17 @@
 # base::admin_user class builds the common admin user for the domain
 # right now ONLY supports ONE user (at least cleanly)
-# this requires the name, ssh-key-type, and ssh_key to be explicitly set in hiera
-# does not set a password for user, but this can changed
-# inherited from base by default
+# authentication can be by password or by ssh only, or both
+# sudo will be password enforced if a password is provided
+# usually inherited from base
 class base::admin_user (
   $remove_default_users = true,
-  $user_has_password    = false
+  $username,
+  $password = false,
+  $ssh_key = false,
+  $ssh_key_type = false
 ) {
 
-  $username = hiera("${module_name}::admin_user::username")
-  $ssh_key_type = hiera("${module_name}::admin_user::ssh-key-type")
-  $ssh_key = hiera("${module_name}::admin_user::ssh-key")
-
-  # i only use RHEL-clones and Ubuntu LTS at the moment
+  # only support RHEL-clones and Ubuntu LTS at the moment
   case $::osfamily {
     'Debian': {
       # wtf ubuntu why so many?
@@ -26,41 +25,44 @@ class base::admin_user (
     }
   }
 
-  if $user_has_password {
-    # define user with password, get it from hiera now
-    # sudo wheel default uses password
-    $password = hiera("${module_name}::admin_user::password")
+  # if password is not provided use no password (cloud instances, public github repo, etc)
+  if $password == false {
     user { $username:
       ensure     => 'present',
       name       => $username,
       managehome => true,
-      password   => $password,
       groups     => $groups,
       shell      => '/bin/bash',
     }
+    $sudoer = 'NOPASSWD:ALL'
   } else {
-    # define user without the password
     user { $username:
       ensure     => 'present',
       name       => $username,
       managehome => true,
       groups     => $groups,
       shell      => '/bin/bash',
+      password   => $password,
     }
-
-    # add a sudoers file since wheel expects password normally
-    file { "/etc/sudoers.d/${username}-nopasswd":
-      ensure  => 'present',
-      content => "${username} ALL=(ALL) NOPASSWD:ALL\n",
-      mode    => '0440',
-    }
+    $sudoer = 'ALL'
   }
 
-  ssh_authorized_key { $username:
-    user    => $username,
-    type    => $ssh_key_type,
-    key     => $ssh_key,
-    require => User[$username]
+  # add a sudoers file since wheel expects password normally
+  file { "/etc/sudoers.d/${username}-nopasswd":
+    ensure  => 'present',
+    content => "${username} ALL=(ALL) ${sudoer}\n",
+    mode    => '0440',
+    require => User[$username],
+  }
+
+  # drop a key in if we have one defined
+  if (ssh_key != false) and (ssh_key_type != false) {
+    ssh_authorized_key { $username:
+      user    => $username,
+      type    => $ssh_key_type,
+      key     => $ssh_key,
+      require => User[$username],
+    }
   }
 
   if $remove_default_users {
