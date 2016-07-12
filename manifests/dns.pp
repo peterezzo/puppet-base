@@ -21,5 +21,5 @@ class base::dns (
 
   # setup host entries in addition to dns
   $hosts = hiera_hash("${name}::hosts",{})
-  create_resources(service, $hosts)
+  create_resources(host, $hosts)
 }
