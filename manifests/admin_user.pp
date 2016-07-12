@@ -5,12 +5,12 @@
 # usually inherited from base
 class base::admin_user (
   $remove_default_users = true,
-  $username,
+  $username = false,
   $password = false,
   $ssh_key = false,
   $ssh_key_type = false
 ) {
-
+  if $username {
   # only support RHEL-clones and Ubuntu LTS at the moment
   case $::osfamily {
     'Debian': {
@@ -72,4 +72,5 @@ class base::admin_user (
       managehome => true,
     }
   }
+}
 }
