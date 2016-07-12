@@ -2,25 +2,26 @@
 # hiera_hash collapses definitions from all levels of hiera so packages can be
 # defined at node/OS/role/common outside of modules and installed all at once
 # it also has optional hooks (all off by default, turn on in hiera)
-# resolvconf - control resolv.conf files for dns (on in common.yaml) TODO: hiera
 # create_admin_user - define admin user and remove defaults (on in common.yaml)
-# profile_proxy_vars - set a proxy via shell variables TODO: hiera
+# configure_dns - control resolv.conf files for dns (on in common.yaml) TODO: hiera
+# configure_dns - set a proxy via shell variables TODO: hiera
 # sudo_env_keep - keep proxy variables when executing sudo (off by default)
 # cron_apt_autoremove - run apt-get autoremove weekly (on in Ubuntu.yaml)
 # cron_puppet_apply - run git pull & puppet apply hourly (off by default)
 # ubuntu_clean_motd - remove landscape bits from Ubuntu's motd (on in Ubuntu.yaml)
 class base (
-  $resolvconf          = false,
   $create_admin_user   = false,
-  $profile_proxy_vars  = false,
+  $configure_dns       = false,
+  $configure_proxy     = false,
   $sudo_env_keep       = false,
   $cron_apt_autoremove = false,
   $cron_puppet_apply   = false,
 ) {
-  # start off by making admin user before anything else if wanted
-  if $create_admin_user {
-    require base::admin_user
-  }
+  # the submodules are all required by base as they are essential functions
+  # we must have working dns, proxy, etc before more advanced configurations
+  if $create_admin_user {require base::admin_user}
+  if $configure_dns {require base::dns}
+  if $configure_proxy {require base::proxy}
 
   # install/remove packages
   # install if not otherwise advised
@@ -43,14 +44,6 @@ class base (
 
   # create/delete basic env variables
   # someday
-
-  # we like DNS to be managed by puppet
-  if resolvconf {
-    file { '/etc/resolv.conf':
-      ensure => present,
-      source => "puppet:///modules/${module_name}/resolv.conf"
-    }
-  }
 
   # set our proxy badly
   if profile_proxy_vars {
