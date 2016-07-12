@@ -1,9 +1,9 @@
 ## FILE MANAGED BY PUPPET, LOCAL CHANGES WILL BE OVERWRITTEN ##
 <% if @domain -%>
-domain <%= @domain %>,
+domain <%= @domain %>
 <% end -%>
 <% if @nameservers -%>
-  <% @nameservers.each do |host| -%>
+<% @nameservers.each do |host| -%>
 nameserver <%= host %>
-  <% end -%>
+<% end -%>
 <% end -%>

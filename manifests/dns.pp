@@ -9,7 +9,7 @@ class base::dns (
   if $configure_dns {
     file { '/etc/resolv.conf':
       ensure => present,
-      template => "puppet:///modules/${module_name}/resolv_conf.erb"
+      content => template("${module_name}/resolv_conf.erb")
     }
   }
 }
