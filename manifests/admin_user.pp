@@ -63,7 +63,7 @@ class base::admin_user (
   }
 
   # drop a public key in if we have one defined
-  if (ssh_key != false) and (ssh_key_type != false) {
+  if ssh_key and ssh_key_type {
     ssh_authorized_key { $username:
       user    => $username,
       type    => $ssh_key_type,
