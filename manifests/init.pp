@@ -3,9 +3,8 @@
 # defined at node/OS/role/common outside of modules and installed all at once
 # it also has optional hooks (all off by default, turn on in hiera)
 # create_admin_user - define admin user and remove defaults (on in common.yaml)
-# configure_dns - control resolv.conf files for dns (on in common.yaml) TODO: hiera
-# configure_dns - set a proxy via shell variables TODO: hiera
-# sudo_env_keep - keep proxy variables when executing sudo (off by default)
+# configure_dns - control resolv.conf files for dns (on in common.yaml)
+# configure_proxy - set a proxy via shell variables
 # cron_apt_autoremove - run apt-get autoremove weekly (on in Ubuntu.yaml)
 # cron_puppet_apply - run git pull & puppet apply hourly (off by default)
 # ubuntu_clean_motd - remove landscape bits from Ubuntu's motd (on in Ubuntu.yaml)
@@ -13,7 +12,6 @@ class base (
   $create_admin_user   = false,
   $configure_dns       = false,
   $configure_proxy     = false,
-  $sudo_env_keep       = false,
   $cron_apt_autoremove = false,
   $cron_puppet_apply   = false,
 ) {
@@ -44,23 +42,6 @@ class base (
 
   # create/delete basic env variables
   # someday
-
-  # set our proxy badly
-  if profile_proxy_vars {
-    file { '/etc/profile.d/proxy.sh':
-      ensure => present,
-      source => "puppet:///modules/${module_name}/profile-proxy_vars.sh"
-    }
-  }
-
-  # keep proxy variables within sudo
-  if sudo_env_keep {
-    file { '/etc/sudoers.d/env_keep':
-      ensure => present,
-      mode   => '0440',
-      source => "puppet:///modules/${module_name}/sudoers-env_keep"
-    }
-  }
 
   # drop a cronjob in to autoremove stale packages
   if cron_apt_autoremove {
