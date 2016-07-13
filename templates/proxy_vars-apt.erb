@@ -8,8 +8,8 @@ Acquire::http::proxy::<%= @host %> "DIRECT";
 <% end -%>
 <% end -%>
 <% if @https_proxy -%>
-Acquire::https::proxy <%= @https_proxy %>/";
+Acquire::https::proxy "<%= @https_proxy %>/";
 <% end -%>
 <% if @ftp_proxy -%>
-Acquire::ftp::proxy <%= @ftp_proxy %>/";
+Acquire::ftp::proxy "<%= @ftp_proxy %>/";
 <% end -%>
