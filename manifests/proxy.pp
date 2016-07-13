@@ -10,7 +10,6 @@ class base::proxy (
   $http_proxy        = false,
   $https_proxy       = false,
   $ftp_proxy         = false,
-  $socks_proxy       = false,
   $no_proxy          = false,
   $configure_apt     = false,
   $configure_profile = true,
@@ -24,7 +23,7 @@ class base::proxy (
     fail("The ${name} module is not supported on an ${::osfamily} based system.")
   }
 
-  if $http_proxy or $https_proxy or $ftp_proxy or $socks_proxy {
+  if $http_proxy or $https_proxy or $ftp_proxy {
     # set basic shell variables through template
     file { '/etc/profile.d/proxy.sh':
       ensure  => present,
