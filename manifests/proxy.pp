@@ -41,7 +41,7 @@ class base::proxy (
 
     # off by default as you can also use apt class for this
     if $configure_apt {
-      file { '/etc/apt.conf.d/01proxy':
+      file { '/etc/apt/apt.conf.d/01proxy':
         ensure  => present,
         content => template("${module_name}/proxy_vars-apt.erb")
       }
