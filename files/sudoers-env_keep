@@ -1,3 +1,3 @@
-# file managed by puppet
+## FILE MANAGED BY PUPPET, LOCAL CHANGES WILL BE OVERWRITTEN ##
 # enable proxies for sudo without keeping all of env
-Defaults env_keep += "http_proxy https_proxy ftp_proxy rsync_proxy no_proxy"
+Defaults env_keep += "http_proxy https_proxy ftp_proxy no_proxy"

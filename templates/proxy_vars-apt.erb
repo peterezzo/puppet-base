@@ -1,0 +1,15 @@
+// FILE MANAGED BY PUPPET, LOCAL CHANGES WILL BE OVERWRITTEN
+<% if @http_proxy -%>
+Acquire::http::proxy "<%= @http_proxy %>/";
+<% end -%>
+<% if @no_proxy -%>
+<% @no_proxy.each do |host| -%>
+Acquire::http::proxy::<%= @host %> "DIRECT";
+<% end -%>
+<% end -%>
+<% if @https_proxy -%>
+Acquire::https::proxy <%= @https_proxy %>/";
+<% end -%>
+<% if @ftp_proxy -%>
+Acquire::ftp::proxy <%= @ftp_proxy %>/";
+<% end -%>

@@ -1,0 +1,13 @@
+## FILE MANAGED BY PUPPET, LOCAL CHANGES WILL BE OVERWRITTEN ##
+<% if @http_proxy -%>
+export http_proxy=<%= @http_proxy %>
+<% end -%>
+<% if @https_proxy -%>
+export https_proxy=<%= @https_proxy %>
+<% end -%>
+<% if @ftp_proxy -%>
+export ftp_proxy=<%= @ftp_proxy %>
+<% end -%>
+<% if @no_proxy -%>
+export no_proxy=<%= @no_proxy %>
+<% end -%>

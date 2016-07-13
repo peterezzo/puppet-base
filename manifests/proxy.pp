@@ -1,30 +1,45 @@
 # configure proxy settings
 class base::proxy (
-  $profile_proxy_vars = "${module_name}::profile_proxy_vars",
-  $sudo_env_keep = "${module_name}::sudo_env_keep"
+  $http_proxy        = false,
+  $https_proxy       = false,
+  $ftp_proxy         = false,
+  $socks_proxy       = false,
+  $no_proxy          = false,
+  $configure_apt     = true,
+  $configure_profile = true,
+  $configure_sudo    = true
 ) {
   if $caller_module_name != $module_name {
     fail("Use of private class ${name} by ${caller_module_name}")
   }
 
-  if ($::kernel == 'windows') {
+  if $::kernel == 'windows' {
     fail("The ${name} module is not supported on an ${::osfamily} based system.")
   }
 
-  # set our proxy badly
-  if profile_proxy_vars {
+  if $http_proxy or $https_proxy or $ftp_proxy or $socks_proxy {
+    # set basic shell variables through template
     file { '/etc/profile.d/proxy.sh':
-      ensure => present,
-      source => "puppet:///modules/${module_name}/profile-proxy_vars.sh"
+      ensure  => present,
+      content => template("${module_name}/proxy_vars-profile.erb")
     }
-  }
 
-  # keep proxy variables within sudo
-  if sudo_env_keep {
-    file { '/etc/sudoers.d/env_keep':
-      ensure => present,
-      mode   => '0440',
-      source => "puppet:///modules/${module_name}/sudoers-env_keep"
+    # keep proxy variables within sudo
+    if $configure_sudo {
+      file { '/etc/sudoers.d/env_keep':
+        ensure => present,
+        mode   => '0440',
+        source => "puppet:///modules/${module_name}/sudoers-env_keep"
+      }
     }
+
+    if $::osfamily == 'Debian' and $configure_apt {
+      file { '/etc/apt.conf.d/01proxy':
+        ensure  => present,
+        content => template("${module_name}/proxy_vars-apt.erb")
+      }
+    }
+  } else {
+    fail("${name} called without any proxy variables set")
   }
 }
