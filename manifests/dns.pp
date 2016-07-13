@@ -10,7 +10,7 @@ class base::dns (
   }
 
   # configure DNS if this is a nix machine, by horribly bad detection
-  if ($::kernel != 'windows') {
+  if $::kernel != 'windows' {
     file { '/etc/resolv.conf':
       ensure  => present,
       content => template("${module_name}/resolv_conf.erb")
