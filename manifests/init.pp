@@ -14,6 +14,7 @@ class base (
   $configure_proxy     = false,
   $cron_apt_autoremove = false,
   $cron_puppet_apply   = false,
+  $ubuntu_clean_motd   = false,
 ) {
   # the submodules are all required by base as they are essential functions
   # we must have working dns, proxy, etc before more advanced configurations
@@ -44,7 +45,7 @@ class base (
   # someday
 
   # drop a cronjob in to autoremove stale packages
-  if cron_apt_autoremove {
+  if $cron_apt_autoremove {
     file { '/etc/cron.weekly/apt_autoremove':
       ensure => present,
       mode   => '0766',
@@ -53,7 +54,7 @@ class base (
   }
 
   # for agentless setups use a cronjob each hour to sync and apply
-  if cron_puppet_apply {
+  if $cron_puppet_apply {
     file { '/etc/cron.hourly/puppet_apply':
       ensure => present,
       mode   => '0766',
@@ -62,7 +63,7 @@ class base (
   }
 
   # turn off the landscape bits in motd, specific to ubuntu
-  if ($::operatingsystem == 'Ubuntu') and ubuntu_clean_motd {
+  if $::operatingsystem == 'Ubuntu' and $ubuntu_clean_motd {
     file { '/etc/update-motd.d/10-help-text':
       ensure => absent,
     }
