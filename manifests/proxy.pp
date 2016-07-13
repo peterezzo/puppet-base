@@ -1,11 +1,18 @@
 # configure proxy settings
+# http_proxy = url with proto and port (http://host:port) of http proxy
+# https_proxy = url with proto and port of https proxy
+# ftp_proxy = url with proto and port of ftp proxy
+# no proxy = array of domains to not proxy (example.com, etc.com)
+# configure_apt = setup apt proxy configuration
+# configure_profile = setup global environment vars for proxy
+# configure_sudo = add proxy vars to env_keep (all applicable)
 class base::proxy (
   $http_proxy        = false,
   $https_proxy       = false,
   $ftp_proxy         = false,
   $socks_proxy       = false,
   $no_proxy          = false,
-  $configure_apt     = true,
+  $configure_apt     = false,
   $configure_profile = true,
   $configure_sudo    = true
 ) {
@@ -33,7 +40,8 @@ class base::proxy (
       }
     }
 
-    if $::osfamily == 'Debian' and $configure_apt {
+    # off by default as you can also use apt class for this
+    if $configure_apt {
       file { '/etc/apt.conf.d/01proxy':
         ensure  => present,
         content => template("${module_name}/proxy_vars-apt.erb")
