@@ -42,7 +42,8 @@ class base (
   create_resources(user, $users)
 
   # create/delete basic env variables
-  # someday
+  $shellvars = hiera_hash("${module_name}::shellvars",{})
+  create_resources(shellvar, $shellvars)
 
   # drop a cronjob in to autoremove stale packages
   if $cron_apt_autoremove {
