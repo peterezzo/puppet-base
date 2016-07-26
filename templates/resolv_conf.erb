@@ -1,9 +1,0 @@
-## FILE MANAGED BY PUPPET, LOCAL CHANGES WILL BE OVERWRITTEN ##
-<% if @domains -%>
-search <%= @domains.join(' ') %>
-<% end -%>
-<% if @nameservers -%>
-<% @nameservers.each do |host| -%>
-nameserver <%= host %>
-<% end -%>
-<% end -%>
