@@ -1,5 +1,5 @@
 {
-  "name": "peterezzo-ssh",
+  "name": "peterezzo-base",
   "version": "0.0.1",
   "summary": "Puppet module for resource configuration in hiera",
   "author": "Pete Ezzo",
