@@ -33,30 +33,27 @@ class base (
 
   # remainder of file are simply wrappers for hiera calls
 
-  # install/remove packages
-  # install if not otherwise advised
   $packages = hiera_hash("${module_name}::packages",{})
   $defaults = { 'ensure' => 'installed' }
   create_resources(package, $packages, $defaults)
 
-  # control running/bootup status of services
   $services = hiera_hash("${module_name}::services",{})
   create_resources(service, $services)
 
-  # create/delete basic files
   $files = hiera_hash("${module_name}::files",{})
   create_resources(file, $files)
 
-  # create/delete regular users
   $users = hiera_hash("${module_name}::users",{})
   create_resources(user, $users)
 
-  # create/delete basic env variables
-  $shellvars = hiera_hash("${module_name}::shellvars",{})
-  create_resources(shellvar, $shellvars)
-
-  # run execs as needed
   $execs = hiera_hash("${module_name}::execs",{})
   create_resources(exec, $execs)
 
+  # the following resources are dependent on herculesteam/augeasproviders
+
+  $shellvars = hiera_hash("${module_name}::shellvars",{})
+  create_resources(shellvar, $shellvars)
+
+  $sysctls = hiera_hash("${module_name}::sysctls",{})
+  create_resources(sysctl, $sysctls)
 }

@@ -2,7 +2,7 @@
 # facts = array of facts to lookup from hiera and write
 # facterpath = directory (optionally array with last element true path) to store facts in
 class base::metadata (
-  $facts      = false,
+  $facts      = undef,
   $facterpath = ['/etc/facter', '/etc/facter/facts.d']
 ) {
   if $caller_module_name != $module_name {
