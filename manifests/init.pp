@@ -5,10 +5,12 @@
 # apply_os_tweaks - apply some minor adjustments to certain operating systems
 # cron_puppet_apply - run git pull in /etc/puppet and puppet apply hourly
 # create_metadata_facts - enable specified metadata from hiera to be written to facts
+# puppet_install_path - path to puppet config in git for cron template
 class base (
   $apply_os_tweaks       = false,
   $cron_puppet_apply     = false,
-  $create_metadata_facts = true
+  $create_metadata_facts = true,
+  $puppet_install_path   = '/etc/puppet',
 ) {
   # include fact writer by default, needs array of facts sent to do anything
   if $create_metadata_facts {require base::metadata}
@@ -25,9 +27,9 @@ class base (
   # for agentless setups use a cronjob each hour to sync and apply
   if $cron_puppet_apply {
     file { '/etc/cron.hourly/puppet_apply':
-      ensure => present,
-      mode   => '0766',
-      source => "puppet:///modules/${module_name}/cron-puppet_apply.sh"
+      ensure  => present,
+      mode    => '0766',
+      content => template("${module_name}/cron-puppet_apply_sh.erb")
     }
   }
 

@@ -2,8 +2,8 @@
 # cron_apt_autoremove - run apt-get autoremove weekly
 # ubuntu_clean_motd - remove landscape bits from Ubuntu's motd
 class base::ubuntu (
-  $cron_apt_autoremove   = true,
-  $ubuntu_clean_motd     = true
+  $cron_apt_autoremove = true,
+  $ubuntu_clean_motd   = true
 ) {
   if $caller_module_name != $module_name {
     fail("Use of private class ${name} by ${caller_module_name}")

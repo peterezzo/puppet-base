@@ -16,7 +16,6 @@ class base::metadata (
 
     metafact { $facts:
       require => File[$facterpath],
-      path    => $facterpath[-1],
     }
   }
 }
