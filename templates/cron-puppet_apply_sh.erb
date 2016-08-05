@@ -6,6 +6,7 @@
 REPO=<%= @puppet_install_path %>
 
 cd ${REPO}
-git pull
-librarian update
+git fetch --all
+git reset --hard origin/master
+librarian-puppet update
 puppet apply manifests/site.pp
